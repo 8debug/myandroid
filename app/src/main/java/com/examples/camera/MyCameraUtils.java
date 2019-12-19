@@ -1,11 +1,15 @@
 package com.examples.camera;
 
+import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,17 +30,6 @@ public class MyCameraUtils {
             e.printStackTrace();
         }
         return c; // returns null if camera is unavailable
-    }
-
-    /**
-     * 检查相机功能
-     * 获取有关相机功能的详细信息
-     */
-    public static void s(Camera camera){
-        Camera.Parameters parameters = camera.getParameters();
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        Camera.getCameraInfo(0, cameraInfo);
-
     }
 
     public static final int MEDIA_TYPE_IMAGE = 1;
@@ -65,7 +58,7 @@ public class MyCameraUtils {
         }
 
         // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = SimpleDateFormat.getDateInstance().format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE){
             mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
@@ -74,8 +67,20 @@ public class MyCameraUtils {
         } else {
             return null;
         }
-
+        Log.d(TAG, "fileJpg==="+mediaFile.getAbsolutePath());
         return mediaFile;
     }
+
+
+    public static void saveGallery(Context context, File file){
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), file.getName(), null);
+            Uri uri = Uri.fromFile(file);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

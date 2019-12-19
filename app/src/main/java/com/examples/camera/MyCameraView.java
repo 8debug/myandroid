@@ -1,12 +1,14 @@
 package com.examples.camera;
 
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * SurfaceView 可以显示来自相机的实时图像数据，以便用户可以构图并捕捉招聘或视频。
@@ -17,12 +19,38 @@ public class MyCameraView extends SurfaceView implements SurfaceHolder.Callback 
     private static final String TAG = MyCameraView.class.getName();
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private Context mContext;
+    private Camera.Size mFitPreviewSize;
+    private Camera.Size mFitPictureSize;
 
     public MyCameraView(Context context, Camera camera) {
         super(context);
+        mContext = context;
         mCamera = camera;
         mHolder = getHolder();
         mHolder.addCallback(this);
+        mFitPreviewSize = getBestPreviewSize(
+                mCamera.getParameters().getSupportedPreviewSizes(),
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels);
+        mFitPictureSize = getBestPreviewSize(
+                mCamera.getParameters().getSupportedPictureSizes(),
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels);
+    }
+
+    public MyCameraView(Context context, Camera camera, int width, int height) {
+        super(context);
+        mContext = context;
+        mCamera = camera;
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        mFitPreviewSize = getBestPreviewSize(
+                mCamera.getParameters().getSupportedPreviewSizes(),
+                width, height);
+        mFitPictureSize = getBestPreviewSize(
+                mCamera.getParameters().getSupportedPictureSizes(),
+                width, height);
     }
 
     @Override
@@ -54,6 +82,13 @@ public class MyCameraView extends SurfaceView implements SurfaceHolder.Callback 
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.setPreviewSize(mFitPreviewSize.width, mFitPreviewSize.height);
+            parameters.setPictureFormat(ImageFormat.JPEG);
+            parameters.setPreviewFormat(ImageFormat.NV21);
+            parameters.setFocusMode(Camera.Parameters.FLASH_MODE_AUTO);
+            parameters.setPictureSize(mFitPictureSize.width, mFitPictureSize.height);
+            mCamera.setParameters(parameters);
             mCamera.startPreview();
 
         } catch (Exception e){
@@ -64,5 +99,31 @@ public class MyCameraView extends SurfaceView implements SurfaceHolder.Callback 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Take care of releasing the Camera preview in your activity.
+        mCamera.release();
+    }
+
+    public Camera.Size getFitPreviewSize(){
+        return mFitPreviewSize;
+    }
+
+    private Camera.Size getBestPreviewSize(List<Camera.Size> sizes, int width, int height) {
+        Camera.Size result = null;
+        //特别注意此处需要规定rate的比是大的比小的，不然有可能出现rate = height/width，但是后面遍历的时候，current_rate = width/height,所以我们限定都为大的比小的。
+        float rate = (float) Math.max(width, height)/ (float)Math.min(width, height);
+        float tmp_diff;
+        float min_diff = -1f;
+        for (Camera.Size size : sizes) {
+            float current_rate = (float) Math.max(size.width, size.height)/ (float)Math.min(size.width, size.height);
+            tmp_diff = Math.abs(current_rate-rate);
+            if( min_diff < 0){
+                min_diff = tmp_diff ;
+                result = size;
+            }
+            if( tmp_diff < min_diff ){
+                min_diff = tmp_diff ;
+                result = size;
+            }
+        }
+        return result;
     }
 }
