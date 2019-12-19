@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapRegionDecoder;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,12 +23,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.examples.R;
+import com.watermark.androidwm.WatermarkBuilder;
+import com.watermark.androidwm.bean.WatermarkText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
@@ -33,7 +39,6 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 public class MyCameraActivity extends AppCompatActivity {
 
     private static final String TAG = MyCameraView.class.getName();
-//    private Camera mCamera;
     private MyCameraView mPreview;
     private Context mContext;
     private MyView mMyView;
@@ -48,7 +53,14 @@ public class MyCameraActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             try {
-                File pictureFile = MyCameraUtils.getOutputMediaFile(MEDIA_TYPE_IMAGE);
+                Bitmap src = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Bitmap target = Bitmap.createBitmap(src, (src.getWidth()-mMyView.getPos().width)/2, (src.getHeight()-mMyView.getPos().height)/2, mMyView.getPos().width, mMyView.getPos().height);
+                FileOutputStream out = new FileOutputStream(MyCameraUtils.getOutputMediaFile(MEDIA_TYPE_IMAGE));
+                target.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.close();
+                BitmapRegionDecoder brd = BitmapRegionDecoder.newInstance(data, 0, data.length, true);
+                Bitmap croppedBitmap = brd.decodeRegion(new Rect(mMyView.getPos().startX, mMyView.getPos().startY, mMyView.getPos().endX, mMyView.getPos().endY), null);
+                /*File pictureFile = MyCameraUtils.getOutputMediaFile(MEDIA_TYPE_IMAGE);
                 if (pictureFile == null){
                     Log.d(TAG, "Error creating media file, check storage permissions");
                     return;
@@ -57,7 +69,7 @@ public class MyCameraActivity extends AppCompatActivity {
                 fos.write(data);
                 fos.close();
                 MyCameraUtils.saveGallery(mContext, pictureFile);
-                handleImage(pictureFile);
+                handleImage(pictureFile);*/
                 camera.startPreview();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -70,15 +82,28 @@ public class MyCameraActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
+                    DisplayMetrics dm =getResources().getDisplayMetrics();
+                    int w = dm.widthPixels - mPreview.getFitPreviewSize().width;
+                    int h = dm.heightPixels - mPreview.getFitPreviewSize().height;
+
+
+
                     File pictureFile = MyCameraUtils.getOutputMediaFile(MEDIA_TYPE_IMAGE);
                     Bitmap src = BitmapFactory.decodeFile(file.getAbsolutePath());
-                    Bitmap target = Bitmap.createBitmap(src, 0, 0, mMyView.getPos().width, mMyView.getPos().height);
+                    log("bitmap.width==="+src.getWidth()+", bitmap.height==="+src.getHeight()+", mMyView.getPos().startX==="+mMyView.getPos().startX+", mMyView.getPos().startY==="+mMyView.getPos().startY);
+                    Bitmap target = Bitmap.createBitmap(src, mMyView.getPos().startX+w, mMyView.getPos().startY+h, mMyView.getPos().width, mMyView.getPos().height);
+
                     /*target = Bitmap.createScaledBitmap(target,
                             mPreview.getFitPreviewSize().width,
                             mPreview.getFitPreviewSize().height,
                             true);*/
-                    target.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(pictureFile));
+
+                    FileOutputStream out = new FileOutputStream(pictureFile);
+                    target.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.close();
                 } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -119,6 +144,7 @@ public class MyCameraActivity extends AppCompatActivity {
         layout.addView(mPreview);
 
         mMyView = new MyView(mContext, mPreview.getFitPreviewSize().width, mPreview.getFitPreviewSize().height);
+        mMyView.setLayoutParams(layoutParams);
         layout.addView(mMyView);
 
         Button captureButton = findViewById(R.id.button_capture);
