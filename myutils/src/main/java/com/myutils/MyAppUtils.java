@@ -29,9 +29,9 @@ import java.io.IOException;
  * Created by amitshekhar on 07/07/17.
  */
 
-public final class AppUtils {
+public final class MyAppUtils {
 
-    private AppUtils() {
+    private MyAppUtils() {
         // This class is not publicly instantiable
     }
 

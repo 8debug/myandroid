@@ -27,9 +27,9 @@ import android.net.wifi.WifiManager;
  * Created by amitshekhar on 07/07/17.
  */
 
-public final class NetworkUtils {
+public final class MyNetworkUtils {
 
-    private NetworkUtils() {
+    private MyNetworkUtils() {
         // This class is not publicly instantiable
     }
 

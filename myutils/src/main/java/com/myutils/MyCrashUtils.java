@@ -41,11 +41,11 @@ public class MyCrashUtils {
             // 获取当前包名
             String packageName = context.getPackageName();
             // 获取当前进程名
-            String processName = AppUtils.getProcessName(android.os.Process.myPid());
+            String processName = MyAppUtils.getProcessName(android.os.Process.myPid());
             // 设置是否为上报进程
             CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(context);
             strategy.setAppChannel("myChannel");  //设置渠道
-            strategy.setAppVersion(AppUtils.getName(context)+ BuildConfig.VERSION_NAME);      //App的版本
+            strategy.setAppVersion(MyAppUtils.getName(context)+ BuildConfig.VERSION_NAME);      //App的版本
             strategy.setAppPackageName(packageName);  //App的包名
             strategy.setUploadProcess(processName == null || processName.equals(packageName));
             CrashReport.initCrashReport(context, appId, BuildConfig.DEBUG);
