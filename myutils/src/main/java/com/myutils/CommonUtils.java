@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.widget.Toast;
 
-import androidx.annotation.ArrayRes;
-
 import com.myutils.throwables.ToastException;
 
 import java.util.regex.Pattern;
@@ -30,11 +28,6 @@ public class CommonUtils {
 
     public static void showToask(Context context, String msg){
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-    }
-
-    public static void showDialogMenu(Context context, String title, @ArrayRes int id, DialogInterface.OnClickListener onClickListener){
-        String[] array = context.getResources().getStringArray(id);
-        showDialogMenu(context, title, array, onClickListener);
     }
 
     public static void showDialogMenu(Context context, String title, String[] items, DialogInterface.OnClickListener onClickListener){
