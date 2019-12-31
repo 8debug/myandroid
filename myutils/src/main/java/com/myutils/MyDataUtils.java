@@ -10,12 +10,16 @@ public class MyDataUtils {
         return obj==null?"":String.valueOf(obj);
     }
 
-    public static <T> T toNumber(Object obj){
-        if( obj==null ){
-            return null;
-        }
-        String str = obj.toString();
-        return !TextUtils.isEmpty(str) && isNumber(str)? (T)str: null;
+    public static Integer toInteger(String str){
+        return !TextUtils.isEmpty(str) && isNumber(str)? Integer.parseInt(str): null;
+    }
+
+    public static Double toDouble(String str){
+        return !TextUtils.isEmpty(str) && isNumber(str)? Double.parseDouble(str): null;
+    }
+
+    public static Float toFloat(String str){
+        return !TextUtils.isEmpty(str) && isNumber(str)? Float.parseFloat(str): null;
     }
 
     public static boolean isMobileValid(String mobile) {
