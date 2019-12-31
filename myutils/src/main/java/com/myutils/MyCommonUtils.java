@@ -14,22 +14,27 @@ import java.util.regex.Pattern;
 
 public class MyCommonUtils {
 
+    @Deprecated
     public static boolean isMobileValid(String mobile) {
         return Pattern.compile("^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$").matcher(mobile).matches();
     }
 
+    @Deprecated
     public static boolean isNotMobileValid(String mobile) {
         return !isMobileValid(mobile);
     }
 
+    @Deprecated
     public static boolean isNumber(String str) {
         return Pattern.compile("-?[0-9]+(\\.[0-9]+)?").matcher(str).matches();
     }
 
+    @Deprecated
     public static void showToask(Context context, String msg){
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     }
 
+    @Deprecated
     public static void showDialogMenu(Context context, String title, String[] items, DialogInterface.OnClickListener onClickListener){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title);
@@ -37,6 +42,7 @@ public class MyCommonUtils {
         builder.show();
     }
 
+    @Deprecated
     public static ProgressDialog showLoadingDialog(Context context) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.show();
@@ -50,6 +56,7 @@ public class MyCommonUtils {
         return progressDialog;
     }
 
+    @Deprecated
     public static AlertDialog getSimpleAlert(Context context, String msg ){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(msg);
@@ -57,10 +64,12 @@ public class MyCommonUtils {
         return builder.create();
     }
 
+    @Deprecated
     public static void showSimpleAlert(Context context, String msg ){
         getSimpleAlert(context, msg).show();
     }
 
+    @Deprecated
     public static void showException(Context context, Throwable throwable ){
         if( ToastException.class.isAssignableFrom(throwable.getClass()) ){
             showToask(context, throwable.getMessage());
