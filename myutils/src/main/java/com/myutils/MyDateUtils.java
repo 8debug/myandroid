@@ -11,7 +11,7 @@ public class MyDateUtils {
 
     public final static String FORM_NORMAL = "yyyy-MM-dd";
     // TODO 注意格式，不然时间会有差异 yyyy-MM-dd HH:mm:ss
-    public final static String FORM_NORMAL_2 = "yyyy-MM-dd HH:mm:ss";
+    public final static String FORM_NORMAL_FULL = "yyyy-MM-dd HH:mm:ss";
 
     public static Date getDate(String date ){
         return getDate(date, FORM_NORMAL);
@@ -29,7 +29,7 @@ public class MyDateUtils {
     }
 
     public static String getStrDate(Long date ){
-        return getStrDate( date, FORM_NORMAL_2 );
+        return getStrDate( date, FORM_NORMAL_FULL );
     }
 
     public static String getStrDate(Long date, String format ){

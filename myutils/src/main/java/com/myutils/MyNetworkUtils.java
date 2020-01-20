@@ -22,6 +22,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.text.format.Formatter;
 
 /**
  * Created by amitshekhar on 07/07/17.
@@ -33,16 +34,28 @@ public final class MyNetworkUtils {
         // This class is not publicly instantiable
     }
 
-    public static WifiManager getWifiManager(Context context){
+    public static String getIpAddress(){
+        return Formatter.formatIpAddress(getWifiManager().getConnectionInfo().getIpAddress());
+    }
+
+    public static WifiManager getWifiManager(){
+        return (WifiManager)MyApplication.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    }
+
+    public static ConnectivityManager getConnectivityManager(){
+        return (ConnectivityManager) MyApplication.getContext().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    /*public static WifiManager getWifiManager(Context context){
         return (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-    }
+    }*/
 
-    public static ConnectivityManager getConnectivityManager(Context context){
+    /*public static ConnectivityManager getConnectivityManager(Context context){
         return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    }
+    }*/
 
-    public static boolean isNetworkConnected(Context context) {
-        ConnectivityManager cm = getConnectivityManager(context);
+    public static boolean isNetworkConnected() {
+        ConnectivityManager cm = getConnectivityManager();
         if (cm != null) {
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
@@ -51,17 +64,17 @@ public final class MyNetworkUtils {
     }
 
 
-    public static NetworkInfo getNetworkInfoForWIFI(Context context ){
-        return getConnectivityManager(context).getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    public static NetworkInfo getNetworkInfoForWIFI(){
+        return getConnectivityManager().getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     }
 
-    public static Boolean activeNetworkIsWIFI(Context context ){
-        return isNetworkConnected(context) && getNetworkInfoForWIFI(context)!=null;
+    public static Boolean activeNetworkIsWIFI(){
+        return isNetworkConnected() && getNetworkInfoForWIFI()!=null;
     }
 
-    public static String getSSID(Context context) throws Exception {
-        if( isNetworkConnected(context) && getNetworkInfoForWIFI(context)!=null ){
-            WifiInfo info = getWifiManager(context).getConnectionInfo();
+    public static String getSSID() throws Exception {
+        if( isNetworkConnected() && getNetworkInfoForWIFI()!=null ){
+            WifiInfo info = getWifiManager().getConnectionInfo();
             return info.getSSID();
         }else{
             // TODO 需要自定义异常
@@ -69,9 +82,9 @@ public final class MyNetworkUtils {
         }
     }
 
-    public static String getBSSID(Context context) throws Exception {
-        if( isNetworkConnected(context) && getNetworkInfoForWIFI(context)!=null ){
-            WifiInfo info = getWifiManager(context).getConnectionInfo();
+    public static String getBSSID() throws Exception {
+        if( isNetworkConnected() && getNetworkInfoForWIFI()!=null ){
+            WifiInfo info = getWifiManager().getConnectionInfo();
             return info.getBSSID();
         }else{
             // TODO 需要自定义异常
@@ -79,8 +92,8 @@ public final class MyNetworkUtils {
         }
     }
 
-    public static NetworkInfo.DetailedState getWifiDetailedState(Context context){
-        NetworkInfo networkInfo = getNetworkInfoForWIFI(context);
+    public static NetworkInfo.DetailedState getWifiDetailedState(){
+        NetworkInfo networkInfo = getNetworkInfoForWIFI();
         if( networkInfo!=null ){
             return networkInfo.getDetailedState();
         }else{

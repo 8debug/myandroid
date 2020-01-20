@@ -1,5 +1,6 @@
 package com.myutils;
 
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -104,6 +105,17 @@ public class MyFileUtils {
         File rename = new File(dir, System.currentTimeMillis() + suffix);
         rename.createNewFile();
         return rename.getAbsolutePath();
+    }
+
+    public static File createByName( String name ) throws IOException {
+        String path;
+        if( Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) ){
+            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+        }else{
+            path = MyApplication.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+        }
+
+        return createFile(path)?new File(path): null;
     }
 
     /*private static File loopCreate(String...options ) throws IOException {

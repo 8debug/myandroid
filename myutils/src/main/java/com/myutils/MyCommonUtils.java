@@ -12,6 +12,7 @@ import com.myutils.throwables.ToastException;
 
 import java.util.regex.Pattern;
 
+@Deprecated
 public class MyCommonUtils {
 
     @Deprecated
