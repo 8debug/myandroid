@@ -29,5 +29,6 @@ dependencies {
 
     // 水印
     implementation 'com.huangyz0918:androidwm:0.2.3'
+    implementation project(path: ':myutils')
 
 }
